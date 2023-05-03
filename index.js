@@ -44,10 +44,28 @@ app.get("/api/users", (req, res, next) => {
 });
 
 // Endpoint for adding new exercise
+const addNewExercise = require("./app.js").addNewExercise;
 app.post("/api/users/:_id/exercises", (req, res, next) => {
   //Add to Mongo
-
-  res.json({ _id: "", username: "", date: "", duration: "", description: "" });
+  let dateExercise;
+  
+  if (req.body.date) {
+    dateExercise = new Date(req.body.date).toDateString();;
+  } else dateExercise = Date().toDateString();
+  
+  console.log(req.body);
+  console.log(req.params);
+  console.log(dateExercise);
+  
+  addNewExercise(req.params._id, req.body.description, req.body.duration, dateExercise, function(err, newExercise, username) {
+    if (err) return console.log(err);
+    res.json({ _id: newExercise.user_id, 
+               username: username,
+               date: newExercise.date.toDateString(),
+               duration: newExercise.duration,
+               description: newExercise.description, })
+    next();
+  });
 });
 
 // Endpoint for showing user's exercises
