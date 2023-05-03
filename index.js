@@ -1,8 +1,14 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
-require('dotenv').config()
 const bodyParser = require("body-parser");
+let mongoose;
+try {
+  mongoose = require("mongoose");
+} catch (e) {
+  console.log(e);
+}
+
 
 app.use(bodyParser.urlencoded({ extended: "false" }));
 app.use(bodyParser.json());
@@ -14,21 +20,27 @@ app.get('/', (req, res) => {
 });
 
 // Endpoint for adding new users
+const addNewUser = require("./app.js").addNewUser;
 app.post("/api/users", (req, res, next) => {
   console.log(req.body);
   // Add to Mongo
-  
-  res.json({ username: req.body.username, _id: "" });
-  next();
+  addNewUser(req.body.username, function(err, newUser) {
+    if (err) return console.log(err);
+    res.json({ username: newUser.username, _id: newUser._id });
+    next();
+  });
 });
 
 //Endpoint for showing users
+const getAllUsers = require("./app.js").getAllUsers;
 app.get("/api/users", (req, res, next) => {
   let allUsers = [{}];
   // Read from Mongo
-  
-  res.json(allUsers);
-  next();
+  getAllUsers(function(err, allUsers) {
+    if (err) return console.log(err);
+    res.json(allUsers);
+    next();
+  });
 });
 
 // Endpoint for adding new exercise
