@@ -56,6 +56,35 @@ function addNewExercise(userId, desc, duration, date, done){
        .catch( (err) => console.log(err));
 }
 
+function showUserExercises(userId, from, to, limit, done){
+  User.findById({ _id: userId })
+      .then(( user ) => {
+        Exercise.find({ user_id: userId })
+          .gte("date", from)
+          .lte("date", to)
+          .limit(limit)
+          .select("-user_id -_id -__v")
+          //.countDocuments()
+          .then( (resultQuery) => {
+            resultQuery = resultQuery.map( function(obj) {
+              return {
+                description: obj.description,
+                duration: obj.duration,
+                date: obj.date.toDateString() 
+              }
+            } );
+            console.log(resultQuery, user.username);
+            done(null, resultQuery, user.username);
+          })
+          .catch( (err) => {
+            console.log(err);
+          });
+        
+      })
+      .catch(( err ) => console.log(err));
+}
+
 exports.addNewUser = addNewUser;
 exports.getAllUsers = getAllUsers;
 exports.addNewExercise = addNewExercise;
+exports.showUserExercises = showUserExercises;
