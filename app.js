@@ -73,7 +73,6 @@ function showUserExercises(userId, from, to, limit, done){
                 date: obj.date.toDateString() 
               }
             } );
-            console.log(resultQuery, user.username);
             done(null, resultQuery, user.username);
           })
           .catch( (err) => {
